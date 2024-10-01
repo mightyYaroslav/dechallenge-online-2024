@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Category {
-  id    Int    @id @default(autoincrement())
-  title String @unique
-  // points String[]
+  id     Int      @id @default(autoincrement())
+  title  String   @unique
+  points String[] @default([])
 }

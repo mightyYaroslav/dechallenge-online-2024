@@ -14,6 +14,13 @@ export class CategoryService {
     return this.prisma.category.create({ data });
   }
 
+  async updateCategory(
+    where: Prisma.CategoryWhereUniqueInput,
+    data: Prisma.CategoryUpdateInput,
+  ): Promise<Category> {
+    return this.prisma.category.update({ where, data });
+  }
+
   async removeCategory(
     where: Prisma.CategoryWhereUniqueInput,
   ): Promise<Category> {

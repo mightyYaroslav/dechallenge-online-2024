@@ -2,18 +2,14 @@ import { ApiOkResponse, ApiProperty, ApiTags } from '@nestjs/swagger';
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   ParseIntPipe,
   Post,
-  Put,
 } from '@nestjs/common';
-import { CategoryService } from './category.service';
-import { Expose, plainToInstance } from 'class-transformer';
-import { IsArray, IsInt, IsString } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
+import { IsString } from 'class-validator';
 import { CallService } from './call.service';
-import { makeWorkerUtils, quickAddJob } from 'graphile-worker';
 import { TaskList } from 'src/taskList';
 
 class CallResponse {

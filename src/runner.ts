@@ -1,14 +1,8 @@
-import { LogFunctionFactory } from '@graphile/logger';
 import { Inject, Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import * as graphile from 'graphile-worker';
-import { Job } from 'graphile-worker';
 import { Pool } from 'pg';
 
-import { createAsyncStateContext } from '../asyncState';
-import logger from '../logger';
-import { setTraceId } from '../logTracing';
-import { ASYNC_JOBS_QUEUE, AsyncJobPayload, WorkersRegistry } from './index';
 import { TaskList } from './taskList';
 
 export interface GraphileRunnerConfig {
@@ -47,7 +41,7 @@ export class GraphileRunner {
     this.runner.events.on(
       'job:error',
       ({ job, error }: { job: any; error: any }) => {
-        logger.warn(
+        console.warn(
           {
             payload: job.payload,
             jobKey: job.key,
@@ -66,7 +60,7 @@ export class GraphileRunner {
     this.runner.events.on(
       'job:failed',
       ({ job, error }: { job: any; error: any }) => {
-        logger.error(
+        console.error(
           {
             payload: job.payload,
             error: error.message,

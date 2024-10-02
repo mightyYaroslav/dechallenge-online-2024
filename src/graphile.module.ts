@@ -17,7 +17,7 @@ export class GraphileModule {
         TaskList,
         GraphileRunner,
       ],
-      exports: [GraphileRunner],
+      exports: [GraphileRunner, TaskList],
     };
   }
 }

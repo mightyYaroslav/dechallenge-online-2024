@@ -14,19 +14,28 @@ datasource db {
 }
 
 model Category {
-  id     Int      @id @default(autoincrement())
-  title  String   @unique
-  points String[] @default([])
-  Call   Call?    @relation(fields: [callId], references: [id])
+  id     Int               @id @default(autoincrement())
+  title  String            @unique
+  points String[]          @default([])
   callId Int?
+  calls  CategoryOnCalls[]
 }
 
 model Call {
-  id            Int        @id @default(autoincrement())
-  name          String
+  id            Int               @id @default(autoincrement())
+  name          String?
   audioUrl      String
-  location      String
-  emotionalTone String
-  text          String
-  categories    Category[]
+  location      String?
+  emotionalTone String?
+  text          String?
+  categories    CategoryOnCalls[]
+}
+
+model CategoryOnCalls {
+  category   Category @relation(fields: [categoryId], references: [id])
+  call       Call     @relation(fields: [callId], references: [id])
+  categoryId Int
+  callId     Int
+
+  @@id([categoryId, callId])
 }

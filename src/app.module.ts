@@ -5,11 +5,11 @@ import { CategoryController } from './category/category.controller';
 import { PrismaService } from './prisma/prisma.service';
 import { CallController } from './call/call.controller';
 import { CallService } from './call/call.service';
-import { GraphileService } from './graphile/graphile.service';
+import { GraphileModule } from './graphile.module';
 
 @Module({
-  imports: [],
+  imports: [GraphileModule],
   controllers: [CategoryController, HealthController, CallController],
-  providers: [CategoryService, PrismaService, CallService, GraphileService],
+  providers: [CategoryService, PrismaService, CallService],
 })
 export class AppModule {}

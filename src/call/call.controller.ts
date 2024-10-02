@@ -10,7 +10,8 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { IsString } from 'class-validator';
 import { CallService } from './call.service';
-import { TaskList } from 'src/taskList';
+import { AnalyzerService } from 'src/analyzer/analyzer.service';
+import { GraphileRunner } from 'src/runner';
 
 class CallResponse {
   @IsString()
@@ -49,7 +50,8 @@ class CallInput {
 export class CallController {
   constructor(
     private readonly callService: CallService,
-    private readonly taskList: TaskList,
+    private readonly runner: GraphileRunner,
+    private readonly analyzer: AnalyzerService,
   ) {}
 
   @Get(':id')
@@ -63,14 +65,11 @@ export class CallController {
   @ApiOkResponse({ type: CallResponse })
   async createCall(@Body() input: CallInput): Promise<CallResponse> {
     const call = await this.callService.createCall(input);
-    await this.taskList.addJob(
-      'process_call',
-      { callId: call.id },
-      ({ callId }) => {
-        console.log(callId);
-        return Promise.resolve();
-      },
-    );
+    await this.runner.addJob({
+      jobId: 'process_call',
+      payload: { callId: call.id },
+      handler: ({ callId }) => this.analyzer.analyze(callId),
+    });
     return plainToInstance(CallResponse, call);
   }
 }

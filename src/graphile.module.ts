@@ -5,7 +5,6 @@ import {
   GraphileRunnerConfig,
   GraphileRunnerConfigType,
 } from './runner';
-import { TaskList } from './taskList';
 
 @Module({})
 export class GraphileModule {
@@ -14,10 +13,9 @@ export class GraphileModule {
       module: GraphileModule,
       providers: [
         { provide: GraphileRunnerConfigType, useValue: options },
-        TaskList,
         GraphileRunner,
       ],
-      exports: [GraphileRunner, TaskList],
+      exports: [GraphileRunner],
     };
   }
 }

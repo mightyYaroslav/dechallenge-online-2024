@@ -1,9 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
 import * as graphile from 'graphile-worker';
 import { Pool } from 'pg';
-
-import { TaskList } from './taskList';
+import { v4 as uuid } from 'uuid';
 
 export interface GraphileRunnerConfig {
   pgPool?: Pool;
@@ -13,29 +11,41 @@ export interface GraphileRunnerConfig {
 }
 export const GraphileRunnerConfigType = Symbol.for('GraphileRunnerConfigType');
 
+type JobTypes = {
+  process_call: {
+    callId: number;
+  };
+};
+
+type Job<T extends keyof JobTypes = keyof JobTypes> = {
+  jobId: T;
+  jobKey?: string;
+  payload: JobTypes[T];
+  handler: (payload: JobTypes[T]) => Promise<void>;
+};
+
+type Registry<T extends keyof JobTypes = keyof JobTypes> = {
+  [k in T]?: (payload: JobTypes[T]) => Promise<void>;
+};
+
 @Injectable()
 export class GraphileRunner {
   public runner?: graphile.Runner;
+  private readonly registry: Registry = {};
+
   constructor(
     @Inject(GraphileRunnerConfigType)
     private readonly config: GraphileRunnerConfig,
-    private readonly taskList: TaskList,
-
-    private readonly moduleReference: ModuleRef,
   ) {}
 
   async onModuleInit(): Promise<void> {
-    const tasks = this.taskList.getJobs();
     this.runner = await graphile.run({
       pgPool: this.config.pgPool,
       connectionString: this.config.databaseUrl,
       concurrency: this.config.concurrency ?? 5,
       noHandleSignals: false,
       pollInterval: this.config.pollInterval ?? 1000,
-      taskList: tasks.reduce(
-        (acc, t) => ({ ...acc, [t.jobKey]: t.handler }),
-        {},
-      ),
+      taskList: this.registry,
     });
 
     this.runner.events.on(
@@ -69,6 +79,13 @@ export class GraphileRunner {
         );
       },
     );
+  }
+
+  async addJob(job: Job): Promise<void> {
+    this.runner.addJob(job.jobId as string, job.payload, {
+      jobKey: job.jobKey ?? uuid(),
+    });
+    this.registry[job.jobId] = job.handler;
   }
 
   async onModuleDestroy(): Promise<void> {

@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { Expose, plainToInstance } from 'class-transformer';
-import { IsArray, IsInt, IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 
 class CategoryResponse {
   @ApiProperty()

@@ -17,7 +17,6 @@ model Category {
   id     Int               @id @default(autoincrement())
   title  String            @unique
   points String[]          @default([])
-  callId Int?
   calls  CategoryOnCalls[]
 }
 

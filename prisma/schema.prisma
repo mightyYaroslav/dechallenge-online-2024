@@ -17,4 +17,16 @@ model Category {
   id     Int      @id @default(autoincrement())
   title  String   @unique
   points String[] @default([])
+  Call   Call?    @relation(fields: [callId], references: [id])
+  callId Int?
+}
+
+model Call {
+  id            Int        @id @default(autoincrement())
+  name          String
+  audioUrl      String
+  location      String
+  emotionalTone String
+  text          String
+  categories    Category[]
 }
